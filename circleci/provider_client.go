@@ -2,6 +2,7 @@ package circleci
 
 import (
 	circleciapi "github.com/andrewstucki/terraform-provider-circleci/circleci/client"
+	"github.com/cenkalti/backoff"
 )
 
 // ProviderClient is a thin commodity wrapper on top of circleciapi
@@ -44,25 +45,53 @@ func (pv *ProviderClient) AddEnvVar(projectName, envVarName, envVarValue string)
 
 // DeleteEnvVar delete the environment variable with given name
 func (pv *ProviderClient) DeleteEnvVar(projectName, envVarName string) error {
-	return pv.client.DeleteEnvVar(pv.vcsType, pv.organization, projectName, envVarName)
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	return backoff.Retry(func() error {
+		return pv.client.DeleteEnvVar(pv.vcsType, pv.organization, projectName, envVarName)
+	}, retry)
 }
 
 // GetProject reads the project with given name
 func (pv *ProviderClient) GetProject(projectName string) (*circleciapi.Project, error) {
-	return pv.client.GetProject(pv.organization, projectName)
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	var err error
+	var project *circleciapi.Project
+	err = backoff.Retry(func() error {
+		project, err = pv.client.GetProject(pv.organization, projectName)
+		return err
+	}, retry)
+	return project, err
 }
 
 // EnableProject enables the project with given name
 func (pv *ProviderClient) EnableProject(projectName string) error {
-	return pv.client.EnableProject(pv.vcsType, pv.organization, projectName)
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	return backoff.Retry(func() error {
+		return pv.client.EnableProject(pv.vcsType, pv.organization, projectName)
+	}, retry)
 }
 
 // FollowProject follows the project with given name
 func (pv *ProviderClient) FollowProject(projectName string) (*circleciapi.Project, error) {
-	return pv.client.FollowProject(pv.vcsType, pv.organization, projectName)
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	var err error
+	var project *circleciapi.Project
+	err = backoff.Retry(func() error {
+		project, err = pv.client.FollowProject(pv.vcsType, pv.organization, projectName)
+		return err
+	}, retry)
+	return project, err
 }
 
 // DisableProject disables the project with given name
 func (pv *ProviderClient) DisableProject(projectName string) error {
-	return pv.client.DisableProject(pv.vcsType, pv.organization, projectName)
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	return backoff.Retry(func() error {
+		return pv.client.DisableProject(pv.vcsType, pv.organization, projectName)
+	}, retry)
 }
