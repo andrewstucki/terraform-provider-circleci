@@ -8,14 +8,14 @@ jobs:
       - checkout
       - run:
           environment:
-            CGO_ENABLED: 0 
+            CGO_ENABLED: 0
             TF_ACC: true
             CIRCLECI_VCS_TYPE: github
             CIRCLECI_ORGANIZATION: andrewstucki
             CIRCLECI_PROJECT: circle-test
           name: Test
           command: |
-            go test -cover ./...
+            go test -cover -v ./...
       - run:
           name: Build
           command: |
