@@ -95,3 +95,21 @@ func (pv *ProviderClient) DisableProject(projectName string) error {
 		return pv.client.DisableProject(pv.vcsType, pv.organization, projectName)
 	}, retry)
 }
+
+// AddSSHKey adds an ssh private key to the project
+func (pv *ProviderClient) AddSSHKey(projectName, hostname, privateKey string) error {
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	return backoff.Retry(func() error {
+		return pv.client.AddSSHKey(pv.vcsType, pv.organization, projectName, hostname, privateKey)
+	}, retry)
+}
+
+// DeleteSSHKey deletes an ssh private key from the project
+func (pv *ProviderClient) DeleteSSHKey(projectName, hostname, fingerprint string) error {
+	retry := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)
+
+	return backoff.Retry(func() error {
+		return pv.client.DeleteSSHKey(pv.vcsType, pv.organization, projectName, hostname, fingerprint)
+	}, retry)
+}

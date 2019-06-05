@@ -30,6 +30,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"circleci_environment_variable": resourceCircleCIEnvironmentVariable(),
 			"circleci_project":              resourceCircleCIProject(),
+			"circleci_ssh_key":              resourceCircleCISSHKey(),
 		},
 		ConfigureFunc: providerConfigure,
 	}
